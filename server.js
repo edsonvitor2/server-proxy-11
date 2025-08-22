@@ -2,25 +2,33 @@ const express = require("express");
 const fetch = require("node-fetch");
 
 const app = express();
-const INTERNAL_SERVER = "http://192.168.20.171:3040";
+const INTERNAL_SERVER = "http://187.91.163.146:3040";
 
 app.use(express.json());
 
-app.all("/api/*", async (req, res) => {
+// Middleware para interceptar tudo que começa com /api
+app.use("/api", async (req, res) => {
   try {
-    const url = `${INTERNAL_SERVER}${req.path.replace("/api", "")}`;
+    const url = `${INTERNAL_SERVER}${req.originalUrl.replace("/api", "")}`;
     const options = {
       method: req.method,
-      headers: { ...req.headers, host: undefined }, // remove header host
+      headers: { ...req.headers, host: undefined },
       body: ["GET", "HEAD"].includes(req.method)
         ? undefined
         : JSON.stringify(req.body),
     };
 
     const response = await fetch(url, options);
-    const data = await response.text();
 
-    res.status(response.status).send(data);
+    // Respeita JSON vs texto
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.includes("application/json")) {
+      const json = await response.json();
+      res.status(response.status).json(json);
+    } else {
+      const text = await response.text();
+      res.status(response.status).send(text);
+    }
   } catch (err) {
     console.error("Erro no proxy:", err);
     res
