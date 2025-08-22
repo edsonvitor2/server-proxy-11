@@ -1,11 +1,11 @@
 const express = require("express");
 const fetch = require("node-fetch");
-
+const cors = require("cors");
 const app = express();
 const INTERNAL_SERVER = "http://187.91.163.146:3040";
 
 app.use(express.json());
-
+app.use(cors());
 // Middleware para interceptar tudo que começa com /api
 app.use("/api", async (req, res) => {
   try {
