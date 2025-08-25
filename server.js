@@ -6,10 +6,11 @@ const INTERNAL_SERVER = "http://187.91.163.146:3040";
 
 app.use(express.json());
 app.use(cors());
-// Middleware para interceptar tudo que começa com /api
-app.use("/api", async (req, res) => {
+
+// Middleware para interceptar todas as rotas
+app.use("/", async (req, res) => {
   try {
-    const url = `${INTERNAL_SERVER}${req.originalUrl.replace("/api", "")}`;
+    const url = `${INTERNAL_SERVER}${req.originalUrl}`;
     const options = {
       method: req.method,
       headers: { ...req.headers, host: undefined },
