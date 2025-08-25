@@ -10,6 +10,7 @@ app.use(cors());
 // Middleware para interceptar todas as rotas
 app.use("/", async (req, res) => {
   try {
+    console.log(`Redirecionando ${req.method} ${req.originalUrl} para ${INTERNAL_SERVER}`);
     const url = `${INTERNAL_SERVER}${req.originalUrl}`;
     const options = {
       method: req.method,
